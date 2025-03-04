@@ -1,43 +1,49 @@
-def add(x, y):
-    return x + y
+ import tkinter as tk
+from tkinter import messagebox
 
-def subtract(x, y):
-    return x - y
 
-def multiply(x, y):
-    return x * y
-
-def divide(x, y):
-    if y == 0:
-        return "Error: Division by zero is not allowed."
-    return x / y
-
-def calculator():
-    print("Select operation:")
-    print("1. Addition")
-    print("2. Subtraction")
-    print("3. Multiplication")
-    print("4. Division")
-    
-    choice = input("Enter choice (1/2/3/4): ")
-    
-    if choice in ('1', '2', '3', '4'):
+def on_click(button_text):
+    if button_text == "=":
         try:
-            num1 = float(input("Enter first number: "))
-            num2 = float(input("Enter second number: "))
-            
-            if choice == '1':
-                print(f"Result: {add(num1, num2)}")
-            elif choice == '2':
-                print(f"Result: {subtract(num1, num2)}")
-            elif choice == '3':
-                print(f"Result: {multiply(num1, num2)}")
-            elif choice == '4':
-                print(f"Result: {divide(num1, num2)}")
-        except ValueError:
-            print("Error: Please enter valid numbers.")
+            result = eval(entry_var.get())
+            entry_var.set(result)
+        except Exception as e:
+            messagebox.showerror("Error", "Invalid Expression")
+    elif button_text == "C":
+        entry_var.set("")
     else:
-        print("Invalid input! Please select a valid operation.")
+        entry_var.set(entry_var.get() + button_text)
 
-# Run the calculator
-calculator()
+
+# Create main window
+root = tk.Tk()
+root.title("Simple Calculator")
+root.geometry("300x400")
+
+time_label = tk.Label(root, text="Basic Calculator", font=("Arial", 14))
+time_label.pack()
+
+entry_var = tk.StringVar()
+entry = tk.Entry(root, textvariable=entry_var, font=(
+    "Arial", 18), justify='right', bd=10, relief=tk.RIDGE)
+entry.pack(fill="both", padx=10, pady=10)
+
+buttons = [
+    ["7", "8", "9", "/"],
+    ["4", "5", "6", "*"],
+    ["1", "2", "3", "-"],
+    ["0", "C", "=", "+"]
+]
+
+frame = tk.Frame(root)
+frame.pack()
+
+for row in buttons:
+    button_row = tk.Frame(frame)
+    button_row.pack(side=tk.TOP)
+    for btn_text in row:
+        button = tk.Button(button_row, text=btn_text, font=("Arial", 14), width=5, height=2,
+                           command=lambda text=btn_text: on_click(text))
+        button.pack(side=tk.LEFT, padx=5, pady=5)
+
+root.mainloop()
