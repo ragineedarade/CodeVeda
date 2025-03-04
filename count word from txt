@@ -1,0 +1,59 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import PyPDF2
+import pdfplumber
+import docx
+
+
+def count_words():
+    try:
+        filename = filedialog.askopenfilename(title="Select a file", filetypes=[
+            ("Text Files", "*.txt"), ("PDF Files", "*.pdf"), ("Word Files", "*.docx")])
+
+        if not filename:
+            return
+
+        content = ""
+
+        if filename.endswith(".txt"):
+            with open(filename, 'r', encoding='utf-8') as file:
+                content = file.read()
+
+        elif filename.endswith(".pdf"):
+            with pdfplumber.open(filename) as pdf:
+                for page in pdf.pages:
+                    content += page.extract_text() + " "
+
+        elif filename.endswith(".docx"):
+            doc = docx.Document(filename)
+            for para in doc.paragraphs:
+                content += para.text + " "
+
+        else:
+            messagebox.showerror("Error", "Unsupported file type.")
+            return
+
+        words = content.split()
+        word_count = len(words)
+        messagebox.showinfo(
+            "Word Count", f"The file contains {word_count} words.")
+
+    except FileNotFoundError:
+        messagebox.showerror("Error", "File not found.")
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
+
+
+# Create GUI
+root = tk.Tk()
+root.title("Word Counter")
+root.geometry("350x200")
+
+label = tk.Label(root, text="Select a file to count words", font=("Arial", 12))
+label.pack(pady=10)
+
+button = tk.Button(root, text="Open File", font=(
+    "Arial", 12), command=count_words)
+button.pack(pady=10)
+
+root.mainloop()
