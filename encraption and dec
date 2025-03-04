@@ -1,0 +1,79 @@
+from cryptography.fernet import Fernet
+import os
+
+# Function to generate a key and save it
+
+
+def generate_key():
+    key = Fernet.generate_key()
+    with open("secret.key", "wb") as key_file:
+        key_file.write(key)
+    print("Encryption key saved as 'secret.key'.")
+
+# Function to load the saved key
+
+
+def load_key():
+    try:
+        with open("secret.key", "rb") as key_file:
+            return key_file.read()
+    except FileNotFoundError:
+        print("Error: No key found. Generate a key first.")
+        exit()
+
+# Function to encrypt a file
+
+
+def encrypt_file(input_file, output_file):
+    key = load_key()
+    cipher = Fernet(key)
+
+    with open(input_file, "rb") as file:
+        file_data = file.read()
+
+    encrypted_data = cipher.encrypt(file_data)
+
+    with open(output_file, "wb") as file:
+        file.write(encrypted_data)
+
+    print(f"File '{input_file}' encrypted successfully as '{output_file}'.")
+
+# Function to decrypt a file
+
+
+def decrypt_file(input_file, output_file):
+    key = load_key()
+    cipher = Fernet(key)
+
+    with open(input_file, "rb") as file:
+        encrypted_data = file.read()
+
+    decrypted_data = cipher.decrypt(encrypted_data)
+
+    with open(output_file, "wb") as file:
+        file.write(decrypted_data)
+
+    print(f"File '{input_file}' decrypted successfully as '{output_file}'.")
+
+
+# Main menu
+if __name__ == "__main__":
+    print("Choose an option:")
+    print("1. Generate Encryption Key")
+    print("2. Encrypt a File")
+    print("3. Decrypt a File")
+
+    choice = input("Enter choice (1/2/3): ")
+
+    if choice == "1":
+        generate_key()
+    elif choice == "2":
+        input_file = input("Enter the file to encrypt: ")
+        output_file = input("Enter the output encrypted file name: ")
+        encrypt_file(input_file, output_file)
+    elif choice == "3":
+        input_file = input("Enter the encrypted file: ")
+        output_file = input("Enter the output decrypted file name: ")
+        decrypt_file(input_file, output_file)
+    else:
+        print("Invalid choice. Exiting.")
